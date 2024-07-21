@@ -1,1 +1,1 @@
-print("30L")
+print("comming soon...")
