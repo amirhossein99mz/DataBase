@@ -1,1 +1,1 @@
-How to do mutilpcation and addition of matrices in python?
+How to do multiplication and addition of matrices in python?
