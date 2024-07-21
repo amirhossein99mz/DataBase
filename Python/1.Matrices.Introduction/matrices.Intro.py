@@ -2,8 +2,8 @@ import random as r
 
 def create_matrix():
     
-    row = 3 # int(input("Enter a number as row:"))
-    col = 3  # int(input("Enter a number as column:"))
+    row = int(input("Enter a number as row:"))
+    col = int(input("Enter a number as column:"))
     matrix = []
     for i in range(row):
         new = []
@@ -17,7 +17,7 @@ def create_matrix():
 def prin1_matrix(main_matrix):
 
     #print matrix
-    print("Original matrix is:")
+    print("Beginning matrix is:")
     #type 1
     for i in range(len(main_matrix)):
         for j in range(len(main_matrix[i])):
@@ -49,7 +49,7 @@ def prin1_matrix(main_matrix):
     for line in  main_diag:
         print(line)
     print()
-    print("The anti diagonal is ")
+    print("The anti-main diagonal is ")
     for line in  anti_diag:
         print(line)
     print()
@@ -81,7 +81,9 @@ def inverse(main_matrix):
     if len(main_matrix) != len(main_matrix[0]):
         print("The matrix is NOT square;thus there is NO inverse of matrix.")
     else:
-        if len(main_matrix) == 2:
+        if len(main_matrix) != 2:
+            print("The size of matrix is NOT 2x2.")
+        else:
             det = (main_matrix[0][0]*main_matrix[1][1])-(main_matrix[0][1]*main_matrix[1][0])
             if det == 0:
                 print("The matrix is NOT invertibe")
@@ -94,14 +96,16 @@ def inverse(main_matrix):
                     print()
                 print()
     print()
-    print("Please scroll up to see the all.")
     
-
+    
 def main():
     
     main_matrix = create_matrix()
     prin1_matrix(main_matrix)
     transpose(main_matrix)
     inverse(main_matrix)
+
+    print("Please scroll up to see the all.")
+
 if __name__ == "__main__":
     main()
