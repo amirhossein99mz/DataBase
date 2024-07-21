@@ -106,6 +106,7 @@ def main():
     inverse(main_matrix)
 
     print("Please scroll up to see the all.")
+    #Enter cls to celar command window
 
 if __name__ == "__main__":
     main()
