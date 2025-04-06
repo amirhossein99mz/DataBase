@@ -1,0 +1,78 @@
+/*to write OX.Game code in C : 
+*1.write associated libraries
+*2. #define SIZE 3
+*3. printMatrix() , bool checkWinner() , int main() 
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <time.h>
+#define SIZE 3
+
+void printMatrix(char matrix[SIZE][SIZE])
+    for(int i=0;i<SIZE;i++){
+        for(int j=0;j<SIZE;j++)
+            printf("%c",matrix[i][j]);
+        printf("\n");
+}
+
+bool checkWinner(char matrix[SIZE][SIZE],char player){
+    for(int i = 0;i <SIZE;i++){
+        for(int j=0lj<SIZE;j++){
+            if((matrix[i][0]==player && matrix[i][1] == player && matrix[i][2] == player)||(matrix[0][j]==player && matrix[1][j] == player && matrix[2][j]
+            == player))
+                return true;
+    
+    if((matrix[0][0]==player&& matrix[1][1]== player && matrix[2][2] == player)||(matrix[0][2]==player && matrix[1][j] == player && matrix[2][0]
+            == player))
+        return true;
+    return false;
+
+int main(){
+    char matrix[SIZE][SIZE];
+    
+    for(int i=0;i<SIZE;i++){
+        for (int j =0;j<SIZE;j++)
+            matrix[i][j] = '_';
+    }
+    
+
+   int count=0;
+   char winner = '\0';
+   
+   srand(time(0));
+   
+   while(winner == '\0'){
+       count ++;
+       int row1,col1,row2,col2;
+       printf("Enter a number as row:");
+       scanf("%d",&row1);
+       printf("Enter a number as column:");
+       scanf("%d",&col1);
+        
+       row2 = rand() %SIZE;
+       col2 = rand() %SIZE;
+       
+       printMatrix(matrix);
+       
+       if checkWinner(matrix,'O')
+           winner = 'U';
+       else if checkWinner(matrix,'X')
+           winner = 'P';
+    }
+    
+    if(winner == 'U')
+        printf("User wins the match after %d hands",count);
+    if(winner == 'P')
+        printf("PLayer wins the match after %d hands",count);
+ 
+        
+   
+          
+
+
+
+    return 0;
+}
+                         

@@ -1,0 +1,16 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+int main(){
+    char fileName[50];
+    printf("Enter the name of the file.");
+    scanf("%s",filename);
+    
+    //concatenate name with ".txt"
+    strcat(filename,".txt");
+    
+    printf("%s",filename);
+
+}
+
+

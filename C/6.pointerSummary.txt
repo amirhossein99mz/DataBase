@@ -1,0 +1,112 @@
+A)if NOT array of pointer:
+SIMPLE ARRAY (1D and 2D)
+
+
+1.1D array : append pointer to a simple array and read
+
+#include <stdio.h>
+int main() {
+    int arr[3] = {23,234,12};
+    int *p = &arr[0];
+    for(int i =0;i<3;i++)
+        printf("%d ",*(p+i));
+    printf("\n");
+    return 0;
+}
+
+
+2.1D array  : read a simple array by pointer
+
+#include <stdio.h>
+int main() {
+    int arr[3];
+    int *p = &arr[0];
+    for(int i=0;i<3;i++,p++)
+        scanf("%d",p);
+    for(int i =0;i<3;i++)
+        printf("%d ",arr[i]);
+    return 0;
+}
+
+
+3.2D array  : read a simple array by pointer 
+
+#include <stdio.h>
+int main() {
+    int arr[2][2] = {{2,4},{5,0}};
+    int *p = *arr;
+    int i,j;
+    int row = sizeof(arr)/sizeof(arr[0]);
+    int col = sizeof(arr[0])/sizeof(arr[0][0]);
+    for(i=0;i<row;i++) {
+        for (j=0;j<col;j++)
+            printf("%d ",*(p+i*col+j));  //arr[i][j] = *(p+i*col+j)
+        printf("\n");
+    }
+    return 0;
+}
+
+
+B)Array of pointer   : write array of pointer in void main(void) 
+
+1.1D array of pointer
+
+
+#include <stdio.h>
+#include <string.h>
+
+void main(void) {
+    int i,j;
+    char *day[2] = {"lunedi","martedi"};
+    printf("Enter an integer number:");
+    scanf("%d",&j); // &j is the pointer of j
+    int len = sizeof(day)/sizeof(day[0]);
+
+    for(i=0;i<len;i++) {
+        if(j<strlen(day[i]))
+            printf("%c",day[i][j]);
+        else printf(" ");
+        printf("\n");
+    }
+
+}
+
+
+
+2.2D array of pointer
+
+#include <stdio.h>
+#include <string.h>
+
+void main(void) {
+    int mat1[2] = {4,5};
+    int mat2[2]= {9,2};
+
+    int *values[2] ={mat1,mat2};
+    int i,j;
+    int row= sizeof(values)/sizeof(values[0]);
+    int col= sizeof(values[0])/sizeof(values[0][0]);
+    for(i=0;i<row;i++) {
+        for(j=0;j<col;j++)
+            printf("%d ",*(values[i]+j));
+        // *(values[i]+j) = values[i][j] 
+        printf("\n");
+    }
+}
+
+
+3.1D array of pointer
+
+#include <stdio.h>
+#include <string.h>
+
+void main(void) {
+    char *names[2] ={"mahasti","hayedeh"};
+    for(int i =0;i<2;i++) {
+        printf("%d.name: %s\n",i,names[i]);
+    }
+}
+
+
+//*(p+....)   or *(p+i*2+j)   :  simple of array with pointer
+// *(values[i]+j) or i,values[i]  : array of pointer 

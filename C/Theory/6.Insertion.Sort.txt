@@ -1,0 +1,12 @@
+void InsertionSort(int A[],int N){
+    int i,j,l=0,r=N-1,x;
+    for(i=l-1;i<=r;i++){
+        x = A[i];
+        j = i-1;
+    while(j>=l && x<A[j]){
+        A[j+1] = A[j];
+        j --;
+     }
+     A[j+1] = x;
+    }
+}

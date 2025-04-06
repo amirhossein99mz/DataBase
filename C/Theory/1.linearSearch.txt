@@ -1,0 +1,48 @@
+//first method: always N steps
+//T(n) grows linearly with n: Linear search
+//Scan the array from first to possibly last element, compare at each
+step current element and key k
+
+#include <stdio.h>
+int LinearSeach1(int v[],int N,int k){
+    
+    int index=-1;
+    for(int i =0;i<N;i++)
+        if(v[i]==k)index = i;
+    return index;
+}
+
+int main(){
+    int v[4] = {43,12,43,20},k=43,N=sizeof(v)/sizeof(v[0]);
+    int index = LinearSeach1(v,N,k);
+    printf("%d",index);
+
+}
+
+
+//second method: at most N steps
+
+
+#include <stdio.h>
+int LinearSearch2(int v[],int N,int k){
+     int i=0;
+     int found =0;
+     while(i<N && found==0){
+         if(k==v[i]) 
+             found=1;
+         else
+             i++;
+     }
+     if(found==0) 
+         return -1;
+     else  
+         return i;
+}
+
+int main(){
+    int v[4] = {23,43,12,23},N=sizeof(v)/sizeof(v[0]),k=23;
+    int index =LinearSearch2(v,N,k);
+    printf("%d",index);
+   
+    return 0;
+}

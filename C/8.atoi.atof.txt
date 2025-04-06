@@ -1,0 +1,18 @@
+atoi : convert string  to integer number
+atof : convert string to floating-point number
+related library : #include<stdlib.h>
+we use pointer (memory address of variable)
+const char *(name of character) = "....."
+atoi(....);
+
+
+#include <stdio.h>
+#include<stdlib.h>
+int main() {
+    const char *str = "1234";
+    printf("%d\n",atoi(str));
+
+    const char *str2 = "54.12";
+    printf("%f\n",atof((str2)));
+    return 0;
+}

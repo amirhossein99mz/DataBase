@@ -1,0 +1,92 @@
+/*for writing a file  and append to the file
+*fprintf(fptr,"%s",string);
+*fputs(string,fptr);
+*putc(character,fptr);
+*
+*
+*for reading file:
+*fscanf(fptr,"%d",&number);
+*fgets(string,20,fptr);
+*getc(fptr);
+*/
+
+//1.Reading a integer from file 
+
+#include<stdio.h>
+int main(){
+    FILE * fptr = fopen("C:\\Users\\amirh\\Desktop\\file.txt","r");
+    if(fptr==NULL) printf("Error!");
+    else{
+        int num;
+        fscanf(fptr,"%d",&num);
+        printf("%d",num);
+        fclose(fw);
+    }
+        fclose(fptr);
+    return 0;
+        
+}
+
+//2.Reading a string from file
+#include<stdio.h>
+int main(){
+    FILE * fptr = fopen("C:\\Users\\amirh\\Desktop\\file.txt","r");
+    if(fptr==NULL) printf("Error!");
+    else{
+        char string[10];
+        fgets(string,10,fptr);
+        printf("%s",string);
+        fclose(fw);
+    } 
+        fclose(fptr);
+    return 0;
+        
+} 
+
+//3.Reading a character from file
+#include <stdio.h>
+int main(){
+    FILE*fw = fopen("C:\\Users\\amirh\\Desktop\\file.txt","r");
+    if(fw == NULL) printf("ERROR!");
+    else{
+        char character;
+        character = getc(fw);
+        printf("%c",character);
+        fclose(fw);
+   }
+       fclose(fw);
+   return 0;
+ }
+
+
+//4.writng a file which contain a number:
+#include <stdio.h>
+int main(){        //w:write. a:append
+    FILE*fw = fopen("C:\\Users\\amirh\\Desktop\\file.txt","w");
+    if(fw == NULL) printf("ERROR!");
+    else{
+        int num = 2;
+        fprintf(fw,"%d",num);
+        fclose(fw);
+    }
+       
+    return 0;
+ }
+
+
+//5.appending a string to the file:
+#include <stdio.h>
+int main(){        //w:write. a:append
+    FILE*fw = fopen("C:\\Users\\amirh\\Desktop\\file.txt","a");
+    if(fw == NULL) printf("ERROR!");
+    else{
+        char string[20] = "EEE";
+        fputs(string,fw);
+        fclose(fw);
+        
+   }
+       
+   return 0;
+ }
+
+

@@ -1,0 +1,175 @@
+prtotpye : call a function , int main, define the function
+
+int compress(): while( if ... counter =0 /else ... counter =0/ ch=ch1 ) 
+
+int decompress():if ... ch = getc(fin)/ else ... ch=ch1
+
+
+
+imprtant Note:
+
+1.convert char[] to an integer number:
+#include<stdio.h>
+#include<stdlib.h>
+pritf("%d",atoi("5")); // 5
+
+
+2.convert char[] to a floating-point number:
+#include<stdio.h>
+#include<stdlib.h>
+pritf("%f",atof("5.542")); // 5.542
+
+
+3.convert char to an integer number:
+#include<stdio.h>
+pritf("%d",'5'-'0'); // 5
+
+
+4.convert char to a floating-point number:
+#inlude<stdio.h>
+pritf("%d",(float)('5'-'0')); //5
+
+*********************************************************************************************************************************************
+
+#include<stdio.h>
+
+int compress(FILE*fin,FILE*fout);
+int decompress(FILE*fin,FILE*fout);
+
+int main(){
+    
+    //define variables
+    FILE*f_read,*f_com,f_dec;
+    char choice;
+    int numberOfCharacters;
+    
+    //I/O
+    printf("Compression(C) or Decompression(D):");
+    scanf("%c",&choice);
+    
+    switch(choice){
+        
+        case 'C':
+             if((f_read=fopen("source.txt","r"))==NULL){
+                printf("Error:opening source file.");
+                return 1;
+             }
+             if((f_com=fopen("compression.txt","w"))==NULL){
+                printf("Error:opening compression file.");
+                return 3;
+             }
+             numberOfCharacters = compress(f_read,f_com);
+             fclose(f_read);
+             fclose(f_com);
+
+       case 'D':
+             if((f_dec=fopen("decompression.txt","w"))==NULL){
+                printf("Error:opening source file.");
+                return 2;
+             }
+             if((f_com=fopen("compression.txt","r"))==NULL){
+                printf("Error:opening compression file.");
+                return 4;
+             }
+             numberOfCharacters = decompress(f_read,f_com);
+             fclose(f_dec);
+             fclose(f_com);
+             
+        default:
+            printf("Error:Invalid character");
+            return 5;
+
+    }
+    
+    if(numberOfCharacters==0) printf("No characters.");
+    else printf("The number of characters are:%d",numberOfCharacters);
+   
+    return 0;
+}
+
+int compress(FILE*fin,FILE*fout){
+    char ch,ch1;
+    int i,counter=0,int numberOfCharacters=0;
+    
+    ch = getc(fin);
+    
+    while(!feof(fin)){
+        ch1 = getc(fin);
+        if(ch == ch1 & counter<9){
+            counter ++;
+        }
+        else{
+            if(counter>=2){
+                fprintf(fin,"%c!%d,ch,counter);
+                numberOfCharacters+=3;
+                counter =0;
+            }
+            else{
+                for(i=0;i<counter+1;i++){
+                    fputc(ch,fin);
+                    numberOfCharacters++;
+                 }
+                 counter =0;
+            }
+        }
+        ch= ch1;
+     }
+     
+     return numberOfCharacters;
+}
+                
+
+int decompress(FILE*fin,FILE*fout){
+    char ch,ch1;
+    int i,counter,int numberOfCharacters=0;
+    ch = getc(fin);
+    
+    while(!feof(fin)){
+        ch1 = getc(fin);
+        if(ch1=='!'){
+            counter = getc(fin)-'0';
+            for(i =0;i<counter+1;i++){
+                fputc(ch,fin);
+                numberOfCharacters++;
+           }
+           ch = getc(fin);
+        else{
+            fputc(ch,fin);
+            numberOfCharacters++;
+            ch = ch1;
+         }
+         
+      }
+      return numberOfCharacters;
+}
+        
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,16 @@
+void CoutingSort(int A[],int B[],int C[],int N,int K){
+
+    int i,l=0,r=N-1;
+    for(i=0;i<k;i++)
+        c[i]=0;
+    for(i=l;i<=r;i++)
+        c[A[i]]++;
+    for(i=1;i<k;i++)
+        c[i]+=c[i-1];
+    for(i=r;i>=l;i--){
+        B[C[A[i]]-1] = A[i];
+        C[A[i]]--;
+    }
+    for(i=l;i<=r;i++)
+        A[i]=B[i];
+}    

@@ -1,0 +1,17 @@
+void  optBubbleSort(int A[],int N){
+    int i,j,l=0,r=N-1,flah=1;
+    int temp;
+    
+    for(i=l;i<r && flag == 1;i++){
+        flag =0;
+        for(j =l;j<r-i+l;j++){
+            if(A[j]>A[j+1]){
+                flag = 1;
+                temp = A[j];
+                A[j] = A[j+1];
+                A[j+1] = temp;
+             }
+         }
+         return;
+     }
+}    
