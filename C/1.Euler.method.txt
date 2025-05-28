@@ -1,0 +1,40 @@
+//return 0: shows that the program successfully completed without any error
+//return 1: shows that the program gives an error or did not completely successful.
+
+#include <stdio.h>
+
+int main(){
+    int num1,num2,result=-1;
+    printf("Enter num1:");
+    scanf("%d",&num1);
+    printf("\n");
+    printf("Enter num2:");
+    scanf("%d",&num2);
+    
+    if(num1 < 0 || num2 < 0){
+        printf("Error!, negative number is NOT valid.");
+        return 1;
+    }
+    int A,B;
+    if(num1>=num2){
+        A=num1,B=num2;
+    }
+    else A = num2,B=num1;
+    
+    while(result!=0){
+        result = A%B;
+        A = B;
+        B =result;
+    }
+    
+    printf("The GCF pf %d and %d is %d",num1,num2,A);
+        
+    
+
+
+
+
+
+
+    return 0;
+ }

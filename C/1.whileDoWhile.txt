@@ -1,0 +1,22 @@
+#include <stdio.h>   // while
+int main(){
+    int i =0;
+    while(i<5){
+        printf("%d\n",i);
+        i ++;
+    }
+    return 0;
+}
+
+#include<stdio.h>    //do while 
+int main(){
+    
+    int i =0;
+    do{
+        printf("%d\n",i);
+        i ++;
+     }
+     while(i<4);
+    return 0;
+
+}

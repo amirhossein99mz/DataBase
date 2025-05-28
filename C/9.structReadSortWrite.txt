@@ -1,0 +1,50 @@
+Ex) read an array of struct from file.txt, sort it based on grade and then write file2.txt
+
+#include <stdio.h>
+
+struct Master {
+    char fname[20];
+    char lname[20];
+    float gpa;
+};
+
+void read_file(struct Master masters[], int *count) {
+    FILE *fptr = fopen("C:\\Users\\amirh\\Desktop\\1\\file.txt", "r");
+    if (fptr == NULL) printf("Error!");
+    *count = 0;
+    while (fscanf(fptr, "%19s %19s %f", masters[*count].fname, masters[*count].lname, &masters[*count].gpa)!=EOF) {
+        (*count)++;
+    }
+
+    fclose(fptr);
+}
+
+void sort_file(struct Master masters[], int count) {
+    for (int k = 0; k < count - 1; k++) {
+        for (int i = 0; i < count - k - 1; i++) {
+            if (masters[i].gpa > masters[i + 1].gpa) {
+                struct Master temp = masters[i];
+                masters[i] = masters[i + 1];
+                masters[i + 1] = temp;
+            }
+        }
+    }
+}
+
+void write_file(struct Master masters[], int count) {
+    FILE *fw = fopen("C:\\Users\\amirh\\Desktop\\1\\file2.txt", "w");
+    for (int i = 0; i < count; i++) {
+        fprintf(fw, "%s %s %.2f\n", masters[i].fname, masters[i].lname, masters[i].gpa);
+    }
+    fclose(fw);
+}
+
+int main() {
+    struct Master masters[100];
+    int count;
+    read_file(masters, &count);
+    sort_file(masters, count);
+    write_file(masters, count);
+
+    return 0;
+}

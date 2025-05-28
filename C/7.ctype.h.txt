@@ -1,0 +1,21 @@
+#include <stdio.h>
+#include<ctype.h>
+int main() {
+
+    // all data types should be considered as ' ' to evaluate
+
+    char grade = '32.50'; // we cannot define ctype in switch
+    if(isdigit(grade)) printf("digit\n");
+
+    char grade2 = 'A';
+    if(isalnum(grade2)) printf("alnum\n");
+    if(isupper(grade2)) printf("upper\n");
+
+    char grade3 = 's';
+    if(islower(grade3)) printf("lower\n");
+
+    char grade4 = '12reis';
+    if(isalpha(grade4)) printf("alpha\n");
+
+    return 0;
+}
