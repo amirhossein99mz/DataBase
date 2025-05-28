@@ -1,0 +1,11 @@
+SELECT C.City,O2.Date,(DISTINCT)C.TaxID
+FROM CUSTOMER C
+JOIN ORDER O2 ON C.TaxID=O2.TaxID
+AND C.TaxID NOT IN (SELECT TaxID
+                    FROM TOY_BUILDING_SET T,ORDER O,ORDER_INCLUDE OI
+                    WHERE T.SID=OI.SID AND O.OID=OI.OID
+                    AND DATE >= '01/01/2022' AND DATE<= '31/12/2022'
+                    GROUP BY OI.OID
+                    HAVING COUNT(DISTINCT Category)>3)
+
+GROUP BY City,Date

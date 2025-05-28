@@ -1,0 +1,68 @@
+COURSE (CodC, Cname, CourseTopic, CourseLevel, RegistrationCost, NumberHours, NoUsersEnrolled)
+USER(CodU, Name, Surname, AddressC, City)
+REQUEST (CodR, CodU, TopicOfInterest, CompetenceLevel, MaxCost)
+NOTIFICATION (CodR, CodU, CodC, Cost)
+
+
+---COURSE (CodC, Cname, CourseTopic, CourseLevel, RegistrationCost, NumberHours, NoUsersEnrolled)
+
+---REQUEST (NEW.CodR, NEW.CodU, NEW.TopicOfInterest, NEW.CompetenceLevel, NEW.MaxCost)###
+
+
+
+
+CREATE TRIGGER SelectCourse
+AFTER INSERT ON REQUEST
+FOR EACH ROW
+DECLARE 
+    X NUMBER;
+    VarMinCost NUMBER;
+    VarCodeC VARCHAR(10);
+    VarCost NUMBER;
+
+
+BEGIN
+
+SELECT COUNT(*)
+INTO X
+FROM COURSE
+WHERE CourseTopic = NEW.TopicOfInterest
+AND   CourseLevel = NEW.CompetenceLevel
+AND   RegistrationCost <= NEW.MaxCost;
+
+
+IF(X=0)THEN
+RAISED_APPLICATION_ERROR(-2001,"There is no course such that meet all the requirements.")
+END IF;
+
+
+SELECT MIN(RegistrationCost)
+INTO VarMinCost
+FROM COURSE
+WHERE CourseTopic = NEW.TopicOfInterest
+AND   CourseLevel = NEW.CompetenceLevel
+AND   RegistrationCost <= NEW.MaxCost;
+
+
+SELECT CodC,RegistrationCost
+INTO VarCodeC,VarCost 
+FROM COURSE
+WHERE CourseTopic = NEW.TopicOfInterest
+AND   CourseLevel = NEW.CompetenceLevel
+AND   RegistrationCost = VarMinCost;
+
+
+UPDATE COURSE
+SET NumberHours = NumberHours +1
+WHERE CodC = VarCodeC
+
+
+INSERT INTO NOTIFICATION (CodR, CodU, CodC, Cost)
+VALUES(NEW.CodR, NEW.CodU,VarCodeC,VarCost)
+
+
+END;
+
+
+
+

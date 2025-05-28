@@ -1,0 +1,88 @@
+COMPANY (CID, NameC, PhoneC, CityC)
+
+JOB_OFFER (CID, Role, NumberAvailableJobs, Salary)
+
+CANDIDATE_EMPLOYEE (TaxID, NameE, SurnameE, AddressE, CityE)
+
+JOB_REQUEST (ReqID, TaxID, ReqRole, MinSalary)
+
+NOTIFICATION (ReqID, TaxID, CID, PhoneC, CityC, Role, Salary)
+
+
+
+
+JOB_OFFER (CID, Role, NumberAvailableJobs, Salary)
+
+@NEW.JOB_REQUEST (NEW.ReqID, NEW.TaxID, NEW.ReqRole, NEW.MinSalary)
+
+
+It must be verified that there is at least one company for which there is at least one position
+available for the role of interest of the candidate, with a salary greater than or equal to the
+minimum wage required by the candidate
+
+
+
+
+CREATE  TRIGGER SelectCompany
+AFTER INSERT ON JOB_REQUEST
+FOR EACH ROW
+DECLARE
+    X NUMBER;
+    VarMaxSalary NUMBER:
+    VarCID JOB_OFFER.CID %TYPE;
+    VarPhoneC COMPANY.PhoneC%TYPE;
+    VarCityC  COMPANY.CityC %TYPE;
+    
+
+BEGIN
+
+SELECT COUNT(*)
+INTO X
+FROM JOB_OFFER
+WHERE Role = NEW.ReqRole
+AND NumberAvailableJobs > 0
+AND Salary >= NEW.MinSalary
+
+
+IF(X=0)THEN
+RAISED_APPLICATION_ERROR(-2001,"There is no job opportunity that meet all the conditions)
+END IF;
+
+
+SELECT MAX(Salary)
+INTO VarMaxSalary;
+FROM JOB_OFFER
+WHERE Role = NEW.ReqRole
+AND NumberAvailableJobs > 0
+AND Salary >= NEW.MinSalary;
+
+
+
+
+SELECT CID
+INTO VarCID;
+FROM JOB_OFFER
+WHERE Role = NEW.ReqRole
+AND NumberAvailableJobs > 0
+AND Salary = VarMaxSalary;
+
+
+UPDATE JOB_OFFER
+SET NumberAvailableJobs = NumberAvailableJobs -1
+WHERE Role = NEW.ReqRole
+AND NumberAvailableJobs > 0
+AND Salary = VarMaxSalary;
+
+
+SELECT PhoneC, CityC 
+INTO VarPhoneC,VarCityC
+FROM COMPANY
+WHERE CID = VarCID
+
+
+INSERT INTO NOTIFICATION (ReqID, TaxID, CID, PhoneC, CityC, Role, Salary)
+VALUES (NEW.ReqID, NEW.TaxID,VarCID,VarPhoneC,VarCityC,NEW.ReqRole,VarMaxSalary)
+
+
+END;
+

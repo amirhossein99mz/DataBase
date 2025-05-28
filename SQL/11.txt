@@ -1,0 +1,356 @@
+WITH OUTCOME AS
+(SELECT U.SSN, S.Brand
+FROM UndergoTest U,SerologicalTest S
+WHERE U.CodT=S.CodT
+AND U.Outcome = 'Positive'
+GROUP BY U.SSN,S.Brand
+HAVING COUNT(*) >=2)
+
+SELECT Brand,COUNT(*) AS overall_num
+FROM UndergoTest U,SerologicalTest S,OUTCOME O
+WHERE U.CodT=S.CodT AND O.BRAND=S.Brand
+AND U.Date >= 01/05/2020 AND U.Date <=30/06/2020
+GROUP BY S.Brand
+
+
+SELECT Brand, COUNT(*)
+FROM SerologicalTest ST, UndergoTest UT
+WHERE ST.CodT = UT.CodT AND Date >= 01/05/2020 AND Date <= 30/06/2020)
+AND (SSN, Brand) IN (
+Select SSN, Brand
+From UndergoTest UT2, SerologicalTest ST2
+where ST2.CodT = UT2.CodT and outcome='positive'
+group by SSN, Brand
+having COUNT(*) > 1)
+GROUP BY Brand
+
+
+WITH Date_table AS(
+SELECT Date AS Day,COUNT(*) AS TotlaNumber
+FROM Builidng B,UndergoTest U
+WHERE B.CodeB=U.CodeB
+AND B.Region ='Piedmon'
+AND U.Date >=01/06/2020 AND U.Date <= 30/06/2020
+GROUP BY B.Date)
+
+
+Maximal_table AS
+(SELECT MAX(TotlaNumber) AS MAX_Overall
+FROM Date_table)
+
+SELECT Day
+FROM Date_table,Maximal_table
+WHERE TotlaNumber=MAX_Overall
+
+TOY_BUILDING_SET (SID, Name, Category, NumPieces)
+CUSTOMER (TaxID, Name, Surname, City, BirthDate)
+ORDER (OID, Date, TaxID)
+ORDER_INCLUDE (OID, SID, Quantity, UnitCost)
+
+Write the following query in SQL language:
+
+
+For each toy building set belonging to the Marvel category that contains more than 300 pieces
+(NumPieces attribute) and has been ordered in at least 50 orders, display the name and number of
+sets sold. Note: The quantity attribute in the ORDER_INCLUDE table corresponds to the number
+of sets sold:
+
+
+SELECT Name, SUM(Quantity)
+FROM TOY_BUILDING_SET S, ORDER_INCLUDE I
+WHERE S.SID=I.SID
+    AND Category=’Marvel’
+AND NumPieces > 300
+GROUP BY S.SID, Name
+HAVING COUNT(*)> 50
+
+
+
+
+
+SELECT T.Name, SUM(I.Quantity)
+FROM TOY_BUILDING_SET S, ORDER_INCLUDE I
+WHERE S.SID=I.SID
+    AND T.Category=’Marvel’
+AND I.NumPieces > 300
+GROUP BY S.SID, Name
+HAVING COUNT(*)> 50
+
+
+
+
+
+
+
+
+SELECT COUNT(*)AS INHABITANTS
+FROM CUSTOMER C,ORDER_INCLUDE ,ORDER
+WHERE JOIN CONDTIONS 
+AND TaxID NOT IN 
+(SELECT P.TaxID
+FROM ORDER O,TOY_BUILDING_SET  T,ORDER_INCLUDE OI
+WHERE 2 JOIN CONDITION
+AND O.Date >=  AND O.Date <= 
+GROUP BY(O.TaxID)
+HAVING COUNT(DISTINCT T.Category) > 5 )
+AND Date>= AND Date<=
+GROUP BY city,Date
+HAVING COUNT(DISTINCT OTD)>=1
+
+
+
+
+TOY_BUILDING_SET (SID, Name, Category, NumPieces)
+CUSTOMER (TaxID, Name, Surname, City, BirthDate)
+ORDER (OID, Date, TaxID)
+ORDER_INCLUDE (OID, SID, Quantity, UnitCost)
+
+Considering only the toy building sets that generated a revenue in May 2023 at least twice the
+revenue generated in April 2023
+
+--MAY 2023
+WITH MayRevenue AS
+(SELECT O.SID AND MAYid ,SUM(Quantity*UnitCost) AS MAYincome
+FROM ORDER O, ORDER_INCLUDE OI
+WHERE O.OID=OI.OID
+AND O.Date >= 01/05/2023 AND O.Date <= 31/05/2023
+GROUP BY O.SID)
+
+
+
+--APRIL 2023
+
+APRILRevenue AS
+(SELECT O.SID AND APRILid ,SUM(Quantity*UnitCost) AS APRILincome
+FROM ORDER O, ORDER_INCLUDE OI
+WHERE O.OID=OI.OID
+AND O.Date >= 01/05/2023 AND O.Date <= 31/05/2023
+GROUP BY O.SID)
+
+
+
+
+--#MAY2023 >= 2* APRIL 2023
+TargetTABLE AS
+(SELECT M.MAYid AS TargetID
+FROM MayRevenue M,APRILRevenue A
+WHERE M.MAYid = A.APRILid
+AND M.MAYincome >= 2*A.APRILincome)
+
+
+
+-- FINAL 
+SELECT T.Category,COUNT(DISTINCT T.SID)
+FROM TOY_BUILDING_SET T,ORDER_INCLUDE OI,ORDER O ,TargetTABLE T
+WHERE T.SID = OI.SID AND O.OID AND OI.OID AND T.TargetID=OI.SID
+AND O.Date >= 01/05/2023 AND O.Date <= 31/05/2023
+GROUP BY T.Category
+
+entity LESSON
+internal id: CodLezione
+external id: COURSE identifier
+attributes: day
+entity LOCAL
+id: LocalCode
+child entities, hierarchy (t, e)
+entity CLASSROOM
+attributes: capacityMax, floor
+entity LABORATORY
+attributes: numPC, devices (1, N)
+relationship IN
+LESSON (1, 1)
+LOCAL (0, N)
+attributes: start time, end time (0,1)
+
+
+entity VAN
+internal id:LicencePlase
+attributes: model,volume(0,1)
+child entites,hierarchy (p, e)
+entity SPECIAL
+certificationList(1,N)
+
+entity RELOCATION
+internal id:Date
+external id : VAN'S LicencePlase
+attributes:DriverName
+
+
+entity WAREHOUSE
+internal id :Code
+attributes: address, CompanyName
+
+relationship TO
+attributes :DepartureTime
+RELOCATION(1,1)
+WAREHOUSE(0,N)
+
+relationship FROM
+attributes :ArrivalTime
+RELOCATION(1,1)
+WAREHOUSE(0,N)
+
+
+relationship MadeBy
+RELOCATION(1,1)
+VAN(0,N)
+
+CREATE OR REPLACE TRIGGER ManageSite
+AFTER INSERT ON REQUEST_FOR_CALCULATION_OF_TOTALBASKETPRICE
+FOR EACH ROW
+DECLARE 
+
+Loyalty_exist NUMBER:
+
+TOTAL_COST NUMBER;
+
+BEGIN
+
+
+
+SELECT SUM(NumberofPieces*CostPerItem) INTO TOTAL_COST
+FROM MARKET_BAKSET M,ITEM_PRICE I
+WHERE M.BasketCode=:NEW.BasketCode
+AND I.ItemCode=M.ItemCode
+ 
+
+
+INSERT INTO BASKET_TOTALPRICE_NOTIFICATION (RequestCode, BasketCode, TotalBasketCost)
+VALUES(:NEW.RequestCode, :NEW.BasketCode,TOTAL_COST)
+
+
+SELECT COUNT(*)INTO Loyalty_exist
+FROM LOYALTY_CARDS
+WHERE LoyaltyCardCode= :NEW.LoyaltyCardCode
+
+IF (Loyalty_exist=0)THEN
+INSERT INTO LOYALTY_CARDS (LoyaltyCardCode, TotalAmount)
+VALUES (:NEW.LoyaltyCardCode,1)
+
+ELSE
+UPDATE LOYALTY_CARDS 
+SET TotalAmount = TotalAmount + 1
+WHERE LoyaltyCardCode= :NEW.LoyaltyCardCode
+
+END IF;
+
+END;
+
+
+
+
+First of all, you must check whether at least one bus is scheduled on the requested route
+(indicated by the departure and arrival station), on the requested date, with a departure time
+corresponding to or later than the specified one, with a sufficient number of seats available.
+
+
+
+
+CREATE OR REPLACE TRIGGER ManageTicket
+AFTER INSRET ON REQUEST_TICKETS
+FOR EACH ROW
+DECALRE 
+   BusExist NUMBER;
+   FirstBus ROUTE.DepTime%TYPE;
+   BusCode ROUTE.icensePlate%TYPE;
+   MyCost NUMBER;
+   MyPoints NUMBER;
+
+
+
+BEGIN
+
+SELECT COUNT(*) INTO BusExist
+FROM RUOTE
+WHERE AvailableSeats > 0
+AND AvailableSeats >= :NEW.NoRequestedTickets
+AND Destination=:NEW.Destination
+AND Departure = :NEW.Departure 
+AND  Date = :NEW.DepartureDate
+AND DepTime >= :NEW.DepTime
+
+
+IF(BusExist=0)THEN
+RAISED_APPLICATION_ERRRO(-2001,"There is no bus available.")
+
+ELSE
+
+SELECT MIN(DepTime) INTO FirstBus
+FROM RUOTE
+WHERE AvailableSeats > 0
+AND AvailableSeats >= :NEW.NoRequestedTickets
+AND Destination=:NEW.Destination
+AND Departure = :NEW.Departure 
+AND  Date = :NEW.DepartureDate
+AND DepTime >= :NEW.DepTime
+
+
+SELECT LicensePlate, Cost, Points INTO BusCode, MyCost, MyPoints
+FROM RUOTE
+WHERE AvailableSeats > 0
+AND AvailableSeats >= :NEW.NoRequestedTickets
+AND Destination=:NEW.Destination
+AND Departure = :NEW.Departure 
+AND  Date = :NEW.DepartureDate
+AND DepTime  =:FirstBus
+ 
+
+IF(:NEW.CardID IS NOT NULL)THEN
+UPDATE LOAYTY_CARD
+SET TotalPoints =TotalPoints+(MyPoints*:NEW.NoRequestedTickets)
+WHERE CardID = :NEW.CardID
+END IF;
+
+
+UPDATE ROUTE
+SET AvailableSeats =AvailableSeats - :NEW.NoRequestedTickets
+WHERE LicensePlate =BusCode
+AND Date = :NEW.DepartureDate
+AND Destination= :NEW.Destination
+AND Departure = :NEW.Departure
+
+
+INSERT INTO EMISSION_TICKETS (LicensePlate, Date, DepTime, TaxID, Departure, TotalCost)
+(BusCode,:NEW.DepartureDate,:NEW.DepTime,:NEW.TaxID,:NEW.Departure,MyCost*:NEW.NoRequestedTickets)
+
+
+
+END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

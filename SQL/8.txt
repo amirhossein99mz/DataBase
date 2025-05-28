@@ -1,0 +1,168 @@
+SELECT Surname,BirthDate
+FROM JUDGE 
+WHERE J.SSN IN (
+    SELECT C.SSN
+    FROM CASE C
+    JOIN HEARING H ON C.CaseId = H.CaseId
+    WHERE C.CaseType = 'Divorce'
+    GROUP BY C.SSN, H.CourthouseId
+    HAVING COUNT(*) >= 10
+ 
+
+    INTERSECT
+    
+    SELECT C.SSN
+    FROM CASE C
+    JOIN HEARING H ON C.CaseId = H.CaseId
+    GROUP BY C.SSN
+    HAVING COUNT(DISTINCT H.CourthouseId) = (
+        SELECT COUNT(*) 
+        FROM COURTHOUSE)
+)
+
+
+CREATE OR REPLACE TRIGGER LaboratoryTotalCost
+AFTER INSERT ON LABORATORY_ENROLLMENT_REQUEST
+FOR EACH ROW
+DECLARE
+   Availability NUMBER;
+   TotalCost    NUMBER;
+BEGIN
+
+SELECT COUNT(*) INTO Availability
+FROM LABORATORY
+WHERE LabCode = :NEW.LabCode
+AND NumberOfAvailablePlaces > 0
+
+
+IF(Availability=0)THEN
+RAISED_APPLICATION_ERROR(-2001,"No lab is available!")
+
+ELSE
+
+SELECT SUM(M.Cost) INTO TotalCost
+FROM LABORATORY L ,MATERIAL M 
+WHERE L.LabCode = :NEW.LabCode AND  L.LabCode = M.LabCode
+AND L.NumberOfAvailablePlaces > 0
+
+
+UPDATE LABORATORY
+SET  NumberOfAvailablePlaces = NumberOfAvailablePlaces -1 
+WHERE LabCode = :NEW.LabCode
+AND NumberOfAvailablePlaces > 0
+
+INSERT INTO ENROLLMENT_NOTIFICATION (LabCodee,UserCode, TotalCost)
+VALUES (:NEW.LabCode,:NEW.UserCode,TotalCost)
+
+
+END IF
+
+
+
+
+END
+
+
+SELECT M.CodeM,M.Date,G.CodP,COUNT(*) AS TotalGoals
+FROM MATCH M,GOAL G
+WHERE M.CodM =G.CodM
+AND M.CodM NOT IN
+(FROM PLAYER P,YELLOW-CARDS Y 
+WHERE P.CodP = Y.CodP
+AND P.Role = 'Striker'
+GROUP BY Y.CodeM
+HAVING COUNT(DISTINCT CodeP) > 3)
+GROUP BY M.CodeM,M.Date,G.CodeP
+
+
+
+
+
+
+SELECT P.Name,P.Surname,MAX(M.Date)
+FROM PALYER P, MATCH M,GOAL G
+WHERE P.CodeP = G.CodeP AND M.CodeM=G.CodeM
+AND nation='Uruguay'
+GROUP BY P.CodeP,P.Name,P.Surname
+
+
+
+
+
+
+
+
+WITH Matches2019 AS
+(SELECT G.CodeP AS IDM,COUNT(DISTINCT G.CodeM) AS TotalMatchScored2019
+MATCH M,GOAL G
+WHERE M.CodeM=G.CodeM
+AND Date BETWEEN '01/01/2019' AND '31/12/2019'
+GROUP BY G.CodeP)
+
+
+FirstTwentyMinutes AS
+(SELECT G.CodeP AS IDP,COUNT(DISTINCT G.CodeM) AS 1st20minutesScored
+MATCH M,GOAL G
+WHERE M.CodeM=G.CodeM
+AND Date BETWEEN '01/01/2019' AND '31/12/2019'
+AND G.MinutesIntoTheMatch BETWEEN 1 AND 20
+GROUP BY G.CodeP)
+
+
+SELECT P.Name, P.Surname, P.Nation
+FROM PLAYER P,Matches2019 M ,FirstTwentyMinutes F
+WHERE P.CodeP = F.IDP AND P.CodeP = M.IDM
+AND F.1st20minutesScored >= (1/5)*M.TotalMatchScored2019
+
+
+
+
+CREATE OR REPLACE TRIGGER LotteryTicketsManagement
+AFTER INSERT ON 
+FOR EACH ROW
+DECLARE
+X NUMBER;
+TicketCount NUMBER;
+Total NUMBER;
+
+BEGIN
+
+SELECT COUNT(*) INTO X
+FROM SOLD_TICKETS
+WHERE TicketNumber = :NEW.TicketNumber
+ 
+IF(X=0)THEN
+RAISED_APPLICATION_ERROR(-2001,"")
+
+ELSE
+--FIRST UPDATED, THEN GO AHEAD
+UPDATE SOLD_TICKETS
+SET Extracted = 'yes'
+WHERE TicketNumber = :NEW.TicketNumber
+
+
+SELECT COUNT(*),SUM(PrizeAmount) INTO TicketCount , Total
+FROM TICKETS  T, SOLD_TICKETS S
+WHERE T.TicketNumber = S.TicketNumber
+AND S.Extrcated = 'yes';
+
+INSERT INTO 
+TICKET_EXTRACTION_STATISTICS (ExtractionCode, TotalNumExtractedkets, TotalPrizeAmount)
+VALUES(:NEW.ExtractionCode,X,Total)
+
+END IF
+END
+
+
+
+
+
+
+
+
+
+
+
+
+
+

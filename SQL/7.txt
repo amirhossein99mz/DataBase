@@ -1,0 +1,7 @@
+SELECT SID,Name,NumPieces
+FROM TOY_BUILDING_SET
+WHERE Categoy = 'Marvel' AND NumPrice >300
+AND SID IN (SELECT SID
+            FROM ORDER_INCLUDE
+            GROUP BY SID
+            HAVING COUNT(DISTINCT OID) >=50)

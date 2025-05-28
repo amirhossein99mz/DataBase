@@ -1,0 +1,211 @@
+SELECT M.Type,COUNT(*) AS NumMessage,SUM(SizeKB)
+FROM USER U,MESSAGE M
+WHERE U.UID = M.UIDSender
+AND City = 'Milan'
+AND UID IN
+(SELECT UIDAdmin
+FROM CHAT
+WHERE CreationDate >= '01/01/2022' AND CreationDate <= '31/12/2020'
+GROUP BY UIDAdmin
+HAVING COUNT(*)>=5
+)
+GROUP BY M.Type
+HAVING COUNT(DISTINCT M.UIDSender) >=10
+
+
+--
+
+SELECT U.Name,U.Surname,M.SubmitDate,C.Title
+FROM CHAT C,USER U,MESSAGE M
+WHERE C.UIDAdmin = U.UID  AND M.CID = C.CID 
+GROUP BY  U.Name,U.Surname,M.SubmitDate,C.Title
+HAVING COUNT(MID) >
+(SLELECT AVG(Total) AS
+FROM (SELECT SubmitDate,COUNT(*) AS Total
+FROM MESSAGE
+WHERE M.SubmitDate =SubmitDate
+GROUP BY CID)AS Table);
+
+
+CREATE OR REPLACE TRIGGER management_of_job_offers
+AFTER INSERT ON JOB_REQUEST
+FOR EACH ROW
+DECLARE 
+X NUMBER;
+Y NUMBER;
+ID COMPANY.CID%TYPE;
+Phone COMPANY.PhoneC%TYPE;
+City COMPANY.CityC%TYPE;
+BEGIN
+
+
+SELECT COUNT(*) INTO X
+FROM JOB_OFFER
+WHERE Role = :NEW.RegRole AND Salary >=MinSalary
+AND NumberAvailableJobs > 0
+
+IF(X=0)THEN
+RAISED_APPLICATION_ERROR(-2001,'There is no available position')
+ELSE
+
+
+SELECT MAX(Salary) INTO  Y
+FROM JOB_OFFER
+WHERE Role = :NEW.RegRole AND Salary >=MinSalary
+AND NumberAvailableJobs > 0
+
+
+SELECT CID ,PhoneC,CityC INTO  ID,Phone,City
+FROM JOB_OFFER J,COMPANY C
+WHERE Role = :NEW.RegRole AND C.CID=J.CID
+AND  Salary =Y
+AND NumberAvailableJobs > 0
+
+
+
+UPDATE JOB_OFFER
+SET NumberAvailableJobs = NumberAvailableJobs -1
+WHERE CID = ID AND Salary =Y
+
+
+INSERT INTO NOTIFICATION (ReqID, TaxID, CID, PhoneC, CityC, Role, Salary)
+(:NEW.ReqID, :NEW.TaxID,ID,Phone,City,:NEW.ReqRole,Y)
+
+
+
+END IF;
+
+END;
+
+
+
+SELECT S.Name,SUM(Quantity) AS NumSetSold
+FROM TOY_BUILDING_SET T , ORDER INCLUDE OI
+WHERE T.SID = OI.SID
+AND T.Category = 'Marvel'
+AND T.NumPieces > 300
+GROUP BY S.SID,S.Name
+HAVING COUNT(*)>=50
+
+
+
+
+
+FROM CUSTOMER
+
+
+
+
+SELECT C.City,O.Date,COUNT(DISINCT TaxID) AS TotalNumCustomers
+FROM CUSTOMER C,ORDER O,ORDER_INCLUDE OI
+WHERE C.TaxID=O.TaxID AND OI.OID=O.OID
+AND O.Date >='01/01/2022' AND O.Date <='31/12/2022'
+AND C.TaxID NOT IN
+
+(SELECT O.TaxID
+FROM TOY_BUILDING_SET T,ORDER O,ORDER_INCLUDE OI
+WHERE T.SID=OI.SID AND O.OID=OI.OID
+AND O.Date >='01/01/2022' AND O.Date <='31/12/2022'
+GROUP BY O.TaxID,I.OID
+HAVING COUNT(DISTINCT T.Category)>3)
+
+GROUP BY C.City,O.Date;
+
+
+
+WITH May2023 AS
+(SELECT T.SID,T.Category,SUM(OI.QuantityO.UnitCost)AS MayR
+FROM ORDER O,ORDER_INCLUDE OI,TOY_BUILDING_SET T
+WHERE O.OID = OI.OID AND T.SID=OI.SID
+AND O.Date >='01/05/2023' AND O.Date <='31/05/2023'
+GROUP BY T.SID,T.Category
+)
+
+
+April2023 AS
+(SELECT T.SID,T.Category,SUM(OI.QuantityO.UnitCost) AS ApriR
+FROM ORDER O,ORDER_INCLUDE OI,TOY_BUILDING_SET T
+WHERE O.OID = OI.OID AND T.SID=OI.SID
+AND O.Date >='01/04/2023' AND O.Date <='30/04/2023'
+GROUP BY T.SID,T.Category)
+
+
+Final AS
+(SELECT M.SID,M.Category
+FROM April2023 A,May2023 M
+WHERE A.SID=M.SID AND A.Category=M.Category
+AND M.MayR>= 2*A.ApriR)
+
+
+SELECT T.Category,COUNT(DISTINCT T.SID)
+FROM TOY_BUILDING_SET T,Final F,ORDER O,ORDER_INCLUDE OI
+WHERE F.SID=T.SID AND F.Category=T.Category
+AND O.OID = OI.OID AND OI.SID =T.SID
+AND O.Date >='01/05/2023' AND O.Date <='31/05/2023'
+GROUP BY T.Category
+
+
+
+CREATE OR REPLACE TRIGGER MangementTickets
+AFTER INSERT ON REQUESTـTICKEYS
+FOR EACH ROW
+DECLARE
+X NUMNBER;
+Y ROUTE.DepTime%TYPE;
+L ROUTE.LicensePlate%TYPE;
+BEGIN
+
+SELECT COUNT(*) INTO X
+FROM ROUTE
+WHERE  DepTime >= :NEW.DepTime AND   Date=:NEW.DepartureDate
+AND Destination=:NEW.Destination AND Departure = :NEW.Departure
+AND AvailableSeats >0 AND AvailableSeats >= :NEW.NoRequestedTickets
+
+
+IF(X=0)THEN
+RAISED_APPLICATION_ERROR(-2001,"There is no bus for specified time")
+
+ELSE
+
+
+SELECT MIN(DepTime) INTO  Y
+FROM ROUTE
+WHERE  DepTime >= :NEW.DepTime AND   Date=:NEW.DepartureDate
+AND Destination=:NEW.Destination AND Departure = :NEW.Departure
+AND AvailableSeats >0 AND AvailableSeats >= :NEW.NoRequestedTickets
+
+
+SELECT LicensePlate ,Cost,Points INTO L,MyCost,MyPoints
+FROM ROUTE
+WHERE  DepTime >= Y AND   Date=:NEW.DepartureDate
+AND Destination=:NEW.Destination AND Departure = :NEW.Departure
+AND AvailableSeats >0 AND AvailableSeats >= :NEW.NoRequestedTickets
+
+IF(:NEW.CardID IS NOT NULL)THEN
+  UPDATE LOYALTY_CARD
+  SET TotalPoints = TotalPoints + (Mypoints *NorequestedTickets)
+  WHERE CardID = :NEW.CardID
+
+
+END IF;
+
+INSERT INTO EMISSION_TICKETS(licensePlate,Date,DepTime,Departure,TotalCost)
+VALUES(MyLicensePlate,:NEW.DepartureDate,MyDepTime,:NEW.CodFiscale,:NEW.Departure, MyCost*:NEW.NoREquestedTickets);
+
+
+
+END;
+
+
+
+
+
+
+
+
+
+
+
+
+
+

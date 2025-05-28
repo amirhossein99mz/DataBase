@@ -1,0 +1,140 @@
+
+WRITER(CodW, Name, Surname, Gender, BirthDate)
+BOOK (CodB, Title, Category, CodP, CodW, DateOfPublication)
+PUBLISHER (CodP, Name, Headquarter)
+WRITER-PRESENT-BOOK (CodW, CodB, PresentationDate, City)
+
+
+
+Write the following query in SQL language:
+Show name and surname of the writers, born between 1960 and 1970, who have
+never presented more than one book, belonging to the category “Science fiction”,
+on the same date.
+
+--same date :  GROUP BY WR.CodW,B.PresentationDate
+--born between 1960 and 1970 : WHERE BirthDate BETWEEN '1960-01-01' AND '1970-12-31'
+
+
+
+SELECT Name,Surname
+FROM WAITER 
+WHERE BirthDate BETWEEN '1960-01-01' AND '1970-12-31'
+AND CodW NOT IN(SELECT WR.codW
+                FROM BOOK B,WRITER-PRESENT-BOOK WR
+                WHERE B.CodB = WR.CodB
+                AND B.Category = "Science fiction"
+                GROUP BY WR.CodW,WR.PresentationDate
+                HAVING COUNT(*)>1)
+
+
+WITH MaleWriters AS
+(SELET WR.PresentationDate AS DateMale, COUNT(*)AS NumMale
+FROM WRITER W,WRITER-PRESENT-BOOK WR
+WHERE W.CodW = WR.CodW
+AND W.Gender = 'male'
+GROUP BY WR.PresentationDate)
+
+
+FemaleWriters AS
+(SELET WR.PresentationDate AS DateFemale, COUNT(*)AS NumFemale
+FROM WRITER W,WRITER-PRESENT-BOOK WR
+WHERE W.CodW = WR.CodW
+AND W.Gender = 'female'
+GROUP BY WR.PresentationDate)
+
+
+FinalTable AS
+(SELECTM.DateMale
+FROM MaleWriters M,FemaleWriters F
+WHERE M.DateMale=F.DateFemale
+AND   F.NumFemale >M.NumMale
+ORDER BY M.DateMale DESC
+
+
+
+
+--books of category “Medicine” presented in at least three different cities during the
+--year 2020.
+
+WITH MedicineBook AS
+(SELECT WR.CodB
+FROM WRITER_PRESENT_BOOK WR,BOOK B 
+WHERE WR.CodB = B.Cod
+AND B.Category = 'Medicine'
+AND WR.PresentationDate BETWEEN '2020-01-01' AND '2020-12-31'
+GROUP BY WE.CodB
+HAVING COUNT(DISTINCT WR.City)>=3)
+
+
+--count all the rows in the table
+TotalBooks AS
+(SELECT COUNT(*) AS Total FROM MedicineBook)
+
+
+
+
+FROM BOOK B, Publisher P
+WHERE P.CodP = B.CodP
+AND B.CodB IN
+(SELECT WR.CodB
+FROM MedicineBook)
+GROUP BY CodP, Name, Headquarter
+HAVING COUNT(DISTINCT CodB) = (SELECT Total
+                               FROM TotalBooks       )
+
+
+CREATE OR REPLACE TRIGGER TotalExpenseCalculation
+AFTER INSERT ON REQUEST_INFO_SUSTAINED_EXPENSES
+FOR EACH ROW
+DECLARE
+X NUMBER;
+CreditID NUMBER;
+
+
+BEGIN
+
+SELECT SUM(ExpendedAmou
+n)INTO X
+FROM EXPENSES_TRANSACTIONS
+WHERE CreditCardNumber = :NEW.CreditCardNumber
+AND  :NEW.StartDate <= Date
+AND   EndDate >= Date
+
+IF(X=0)THEN
+RAISED_APPLICATION_ERROR(-2001,"")
+
+ELSE
+
+SELECT CreditCardNumber INTO CreditID
+FROM CREDIT_CARD
+WHERE CreditCardNumber = :NEW.CreditCardNumber
+
+
+
+INSERT INTO TOTAL_EXPENSES_NOTIFICATION(RequestCode, CreditCardNumber, StartDate, EndDate, CustomerCode, TotalExpendedAmount
+VALUES(:NEW.RequestCode,:NEW.CreditCardNumber,:NEW.StartDate, :NEW.EndDate,CreditID,X)
+
+
+END IF
+
+--If there is no expense transaction for the specified credit card within the given time
+period, the trigger ends with an error
+
+
+END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

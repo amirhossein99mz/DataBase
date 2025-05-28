@@ -1,0 +1,260 @@
+SELECT Name,Surname
+FROM FOOTBALL-PLAYER
+WHERE CodFP IN(
+               SELECT CodFP
+               FROM AWARD
+               WHERE Type = "Top scorer"
+               GROUP BY CodeFP
+               Having COUNT(*) >1 )
+AND CodeFP IN(
+SELECT PT.CodeFP
+FROM TEAM T,PLAYER-TEAM PT
+WHERE T.CodeT = PT.CodeT
+T.Category = "series A")
+
+
+SELECT E.Title,COUNT(*) AS NumberOfEdition
+FROM EVENT EV,EDITION ED
+WHERE EV.CodeE=ED.CodeE
+AND EV.Type = "Theatre Festival"
+AND ED.Date >= 01/01/2018 AND ED.Date <= 31/12/2018
+GROUP BY E.CodeE,E.Title
+HAVING COUNT(*) > 4
+
+
+
+
+SELECT T.Name,T.Category,FP.CodeFp,Fp.Name.Fp.SurName,
+SUM(EndingDate - StartingDat)
+FROM FOOTBALL-PLAYER FP,PLAYER-TEAM PT,TEAM T
+WHERE FP.CodFP = PT.CodFP AND T.CodeT = PT.CodeT
+WHERE FP.CodeFP NOT IN 
+(SELECT PT.CodeFP
+FROM FOOTBALL-PLAYER FP,PLAYER-TEAM PT
+WHERE FP.CodeFP = PT.CodeFP
+AND FP.CityOfBirth = "Torino")
+GROUPY BY T.CodeT,T.Category,T.Name,FP.CodeFp,Fp.Name.Fp.SurName
+
+
+
+
+
+-- finding players who received award for  type : best goalkeeper
+WITH AwardTable AS
+(SELECT COUNT(CodeA) AS NumAward 
+FROM AWARD A, PLAYER-TEAM PT
+WHERE A.CodFP = PT.CodFP 
+AND Type = "Best goalkeeper"
+GROUP BY PT.CodeFP
+)
+
+-- finding highest number of award  for type : best goalkeeper
+AS HighestAward
+(SELECT MAX(NumAward) AS MaxAward
+FROM AwardTable)
+
+
+-- finding players who got highest number of award  for type : best goalkeeper
+AS InterestedPlayers
+(SELECT PT.CodFP
+FROM AWARD A, PLAYER-TEAM PT , HighestAward
+WHERE A.CodFP = PT.CodFP 
+AND Type = "Best goalkeeper"
+GROUP BY PT.CodeFP 
+having COUNT(A.CodeA) = H.MaxAward)
+
+
+--finding the team in which players have gotten highest number of award  for type : best goalkeeper
+
+FROM TEAM T,PLAYER-TEAM PT 
+WHERE T.CodeT = PT.CodeT 
+AND AND PT.Code FP IN (SELECT CodeFP
+                       FROM InterestedPlayers)
+GROUP BY T.CodT, T.Name,T.Category,T.ConstitutionDate
+
+SELECT E.Type ,COUNT(*) AS numerOfEdition
+FROM LOCATION L,EDITION ED,EVENT E
+WHERE L.CodeL = ED.CodeL AND E.CodeE=ED.CodeE
+AND E.Type NOT IN(SELECT E.Type
+                  FROM LOCATION L,EDITION ED,EVENT E
+                  WHERE L.CodeL = ED.CodeL AND                     E.CodeE=ED.CodeE AND L.MaxCapcity <= 70 )
+GROUP BY E.CodeE,E.Type,L.Region
+
+
+
+
+
+LOCATION (CodeL, Name, City, Region, MaxCapacity)
+EVENT (CodeE, Title, Type)
+EDITION (CodeE, DateDate, CodeL, NumberOfParticipants)
+
+
+SELECT 
+FROM LOCATION L,EVENT E,EDITION ED
+WHERE L.CodeL = ED.CodeL AND E.CodeE = ED.CodeE
+GROUP BY E.CodeE, E.Title
+HAVING COUNT(DISTINCT L.City)>= 3
+AND SUM(ED.NumberOfParticipants) = 
+(SELECT MAX(Total)
+FROM (SELECT SUM(NumberOfParticipants) AS Total
+FROM EDITION ED
+GROUP BY E.CodeE
+)AS TABLE);
+
+
+Entity: PROPERTY
+internal ID:LCode
+attributes:Address,Area,Room(1,N)
+
+GENERALIZATION(p,e)
+parent entity : PROPERTY
+child entity : APARTMENT : attribute : floor
+
+
+
+Entity: AGENCY
+internal ID:ACode
+attributes:Address,PhoneNumber(1,N)
+
+
+Entity: CONTRACT
+internal ID:StartDate,EndDate
+external ID: PRPOERTY(LCode)
+attributes:Price ,Renewable
+
+
+
+Relationship ISSUED
+PROPERTY(0,N) , CONTRACT(1,1)
+
+Relationship BY
+AGENCY(0,N) , CONTRACT(1,1)
+
+
+CREATE OR REPLACE TRIGGER ManageActivity
+AFTER INSERT ON MEASUREMENTS_INFO_REQUEST
+FOR EACH ROW
+DECALRE
+SensorExist NUMBER;
+MAXV NUMBER;
+MINV NUMBER;
+
+BEGIN
+
+SELECT COUNT(*) INTO SensorExist
+FROM  SENSOR
+WHERE AreaCode = :NEW.AreaCode
+
+IF(SensorExist=0)THEN
+RAISED_APPLICATION_ERROR("There is no sensor in the specified area.")
+
+ELSE
+
+SELECT  MAX(Value), MIN(Value) INTO MAXV,MINV
+FROM  SENSOR S,PERFORMED_MEASUREMENTS P
+WHERE S.AreaCode= :NEW.AreaCode
+AND P.Date = :NEW.Date 
+AND P.SCode = S.SCode
+GROUP BY P.Date,S.AreaCode
+
+
+INSERT INTO MEASUREMENTS_INFO_NOTIFICATION
+VALUES(:NEW.RequestCode, :NEW.Date, :NEW.AreaCode,MIV,MAXV)
+
+
+
+
+
+END IF;
+END;
+
+
+ENTITIES:
+
+TECHNICAL_WORKER(SSN(ID),Name,Surname,Role,Type,Residence(composite):Address,City,Zip_code,Duration*,Years_of_seniority*)
+
+WORKING_TEAM(CodeTeam(ID),First_intervention_date)
+
+INTERVENTION(CodIntervention(ID),Cost_estimat, CodeTeam)
+
+AUTHORISATION(Cod(ID),Description )
+
+TIME(Start_date) : should be omitted because it is a ternary relationship
+
+HAS_TOOLS(Tool(ID),CodeInvertion(ID))
+
+
+
+Realionships:
+
+COMPOSED_OF(SSN(ID),CodeTeam(ID))
+
+HAS(Start_date(ID),CodAuthorisation(ID),CodIntervention(ID),End_Date*)
+
+Referential integrity constraints:
+
+
+COMPOSED_OF(SSN(ID)) REFERENCES TECHNICAL_WORKER(SSN(ID)
+
+COMPOSED_OF(CodeTeam(ID)) REFERENCES WORKING_TEAM(CodeTeam(ID))
+
+
+HAS(Start_date(ID)) REFERENCES TIME(Start_date(ID))
+
+
+HAS(CodIntervention(ID)) REFERENCES INTERVENTION(CodIntervention(ID))
+
+
+
+HAS(Cod(ID)) REFERENCES AUTHORISATION(Cod(ID))
+
+
+CREATE OR REPLACE TRIGGER LotteryTicketsManagement
+AFTER INSERT ON  TICKET_EXTRACTION
+FOR EACH ROW
+DECLARE
+  SOLD NUMBER;
+  TOTAL NUMBER;
+  COST  NUMBER;
+
+BEGIN 
+
+SELECT COUNT(*) INTO SOLD
+FROM SOLD_TICKETS
+WHERE TicketNumber = :NEW.TicketNumber
+
+
+IF(X=0)THEN
+RAISED_APPLICATION_ERROR(-20001,"The ticket has not been sold.")
+
+ELSE
+
+UPDATE SOLD_TICKETS
+SET Extracted = 'yes'
+WHERE TicketNumber = :NEW.TicketNumber
+
+
+SELECT COUNT(*),SUM(PrizeAmount) INTO TOTAL,COST
+FROM SOLD_TICKETS S,TICKETS T
+WHERE S.TicketNumber = T.TicketNumber
+AND Extracted = 'yes'
+
+
+
+INSERT INTO TICKET_EXTRACTION_STATISTICS (ExtractionCode,TotalNumExtracted,
+TotalPrizeAmount)
+
+VALUES(:NEW.ExtractionCode,TOTAL,COST)
+
+END IF;
+END;
+
+
+
+
+
+
+
+
+
+

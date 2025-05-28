@@ -1,0 +1,6 @@
+SELECT A.CodeA,A.Adress
+FROM ACCOMODATION A,LEASE L
+WHERE A.CodeA = L.CodeA
+      AND A.City = 'Turin' AND L.MonthlyPay > 500
+GROUP BY(A.CodeA)
+HAVING COUNT(DISTINCT L.CodeC)<=5
