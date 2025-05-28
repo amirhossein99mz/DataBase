@@ -1,0 +1,97 @@
+//program argument: L fileLower fileUpper\\
+
+#include<stdio.h>
+#include<string.h>
+#include<ctype.h>
+
+int ToLower(FILE*fp_in,*fp_out);
+int ToUpper(FILE*fp_in,*fp_out);
+
+
+int main(int argc,char *argv[]){
+    FILE*fp_read,*fp_write;
+    int numberOfCharacters=0;
+    
+    char choice = argv[1],filename[10];
+
+    switch(choice){
+        case 'L':
+            strcpy(filename,argv[3]);
+            strcat(filename,".txt");
+            
+            if((fp_read=fopen(filename,"r"))==NULL){
+                printf("Error opening file.");
+                return 1;
+            }
+
+            if((fp_write=fopen("output.txt","w"))==NULL){
+                printf("Error opening file.");
+                return 3;
+            }
+            numberOfCharacters = ToUpper(fp_read,fp_write);
+            fclose(fp_read);
+            fclose(fp_write);
+            break;
+        
+       case 'U':
+            strcpy(filename,argv[2]);
+            strcat(filename,".txt");
+            
+            if((fp_read=fopen(filename,"r"))==NULL){
+                printf("Error opening file.");
+                return 2;
+            }
+
+            if((fp_write=fopen("output.txt","w"))==NULL){
+                printf("Error opening file.");
+                return 4;
+            }
+            numberOfCharacters = ToLower(fp_read,fp_write);
+            fclose(fp_read);
+            fclose(fp_write);
+            break;
+       default:
+           printf("Error Invalid character"):
+           break;
+       }
+      
+      if(numberOfCharacters==0) printf("no characters.");
+      else printf("number of charcaters:",numberOfCharacters);
+         
+      return 0;
+             
+}
+
+int ToLower(FILE*fp_in,*fp_out){
+    int numberOfCharacters=0;
+    char ch;
+    
+    while(!feof(fin)){
+        ch = getc(fin);
+        if(isalpha(ch)) ch = tolower(ch);
+        if(!feof(fin)){
+            putc(ch,fout);
+            numberOfCharacters ++;
+        }
+     }
+    
+     return numberOfCharacters;
+            
+}
+
+int ToUpper(FILE*fp_in,*fp_out){
+    int numberOfCharacters=0;
+    char ch;
+    
+    while(!feof(fin)){
+        ch = getc(fin);
+        if(isalpha(ch)) ch = toupper(ch);
+        if(!feof(fin)){
+            putc(ch,fout);
+            numberOfCharacters ++;
+        }
+     }
+    
+     return numberOfCharacters;
+            
+}

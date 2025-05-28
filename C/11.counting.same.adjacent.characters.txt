@@ -1,0 +1,40 @@
+#include<stdio.h>
+
+int main(void){
+    
+    FILE*fp_in,*fp_write;
+    
+    int numberOfCharacters=0,counter =1;
+    
+    char ch,ch1;
+    
+    if((fp_in=fopen("file.txt","r"))==NULL){
+        printf("Error opening file(reading version).");
+        return 1;
+    }
+  
+    if((fp_write=fopen("fileWritten.txt","w"))==NULL){
+        printf("Error opening file(writen version).");
+        return 3;
+    }
+   
+    ch =getc(fp_in);
+  
+    while(!feof(fp_in)){
+         ch1 = getc(fp_in);
+         if(ch1!=EOF){
+             if(ch = ch1) counter++;
+             else{
+                 fprintf(fp_in,"%c:%d\n",counter);
+                 ch =ch1;
+                 counter=1;
+             }
+      
+        numberOfCharacters ++;
+        }
+    }
+
+
+
+    return 0;
+}
