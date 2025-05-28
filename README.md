@@ -1,4 +1,3 @@
-# MONTAZERI_AMIR_99
-A student of Computer engineering at Politecnico di Torino.
-This source contains exams, notes, and all the code fragments developed during my studies of Computer science and Programming techniques.
-You can contact me via gmail : amirhossein78mz@gmail.com or Telegram : https://t.me/a_m_i_r_m_n_i
+I'm a Computer Engineering student at Politecnico di Torino.
+I’m learning and growing every day — working with Python, C, and SQL, and diving into full-stack web development.
+Always curious, always building — one project at a time.
