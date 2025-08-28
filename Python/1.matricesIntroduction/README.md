@@ -1,1 +1,0 @@
-This file aims to create a matrix with random numbers form 0 to 9 which is impelemented by  "import random as r" command.Also show elements of each row,column,main diagonal and anti-main diagonal of the matrix in Pytohn.Finally,provide inverse and transpose of the beginning one.This type is one of the elementary concepts of Python programming.
